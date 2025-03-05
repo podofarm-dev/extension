@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     cancelLink.addEventListener("click", function () {
         resetUI();
-        chrome.storage.local.remove(["id", "studyId", "problemId", "isConnected", "bjhEnable"], function () {
-            console.log("연동 정보 및 상태 초기화 완료");
+        chrome.storage.local.remove(["id", "studyId", "problemId", "isConnected", "pfEnable"], function () {
+            console.log("연동 취소 완료");
         });
     });
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     toggleSwitch.addEventListener("change", function () {
-        chrome.storage.local.set({ 'bjhEnable': this.checked }, function () {
+        chrome.storage.local.set({ 'pfEnable': this.checked }, function () {
             console.log(`토글 상태 저장됨: ${toggleSwitch.checked ? "ON" : "OFF"}`);
         });
 
@@ -50,10 +50,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function initializeUI() {
-        chrome.storage.local.get(['id', 'studyId', 'isConnected', 'bjhEnable'], function (data) {
+        chrome.storage.local.get(['id', 'studyId', 'isConnected', 'pfEnable'], function (data) {
             if (data.isConnected && data.id && data.studyId) {
                 handleSuccessUI(data.id, data.studyId);
-                toggleSwitch.checked = data.bjhEnable ?? true;
+                toggleSwitch.checked = data.pfEnable ?? true;
 
                 if (toggleSwitch.checked) {
                     syncButton.classList.add("toggled");
@@ -72,24 +72,26 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, studyId })
         })
-        .then(response => response.text())
+        .then(response => response.json())  
         .then(data => {
             console.log(`${url} 서버로부터 받은 응답:`, data);
+    
+            if (data.status === "success") { 
+                const problemIdList = data.problemIdList || []; 
+                
+                const dataStorage = { id, studyId, problemId: problemIdList, isConnected: true };
+                alert(`스토리지가 연동되었습니다! [${url}] ID: ${id}, StudyID: ${studyId}, problemIdList : [${problemIdList.join(', ')}]`);
 
-            if (data === "success") {
-                alert(`스토리지가 연동되었습니다! [${url}] ID: ${id}, StudyID: ${studyId}`);
-
-                const dataStorage = { id, studyId, problemId: [], isConnected: true };
                 chrome.storage.local.set(dataStorage, function () {
                     console.log('연동 정보 저장:', dataStorage);
                 });
-
-                chrome.storage.local.set({ bjhEnable: true }, function () {
+    
+                chrome.storage.local.set({ pfEnable: true }, function () {
                     toggleSwitch.checked = true;
                     syncButton.classList.add("toggled");
                     console.log('연동 시 토글 상태 ON으로 설정');
                 });
-
+    
                 handleSuccessUI(id, studyId);
             } else {
                 alert(`[${url}] 연동에 실패하였습니다. ID와 스터디 아이디를 확인해주세요.`);
@@ -100,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert(`[${url}] 연동 중 오류가 발생했습니다.`);
         });
     }
+    
 
     function handleSuccessUI(id, studyId) {
         connectButton.style.display = "none";
@@ -127,6 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
         extensionContent.classList.remove("connected");
         toggleSwitch.checked = false;
         syncButton.classList.remove("toggled");
-        chrome.storage.local.set({ bjhEnable: false });
+        chrome.storage.local.set({ pfEnable: false });
     }
 });

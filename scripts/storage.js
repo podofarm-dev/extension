@@ -23,11 +23,6 @@ async function getObjectFromLocalStorage(key) {
       try {
         chrome.storage.local.get(key, function(value) {
           resolve(value[key]);
-        /* 현재,  enable은 popup.js의 버튼과 연결되어있음
-        버튼이 없으므로 그냥 가능하다고 일단 작업
-        */
-        
-    
         
         console.log("getObjectFromStorage 시도 중 ");
         console.log(value[key]);

@@ -1,3 +1,5 @@
+/*Parsing을 위한 작업 */
+
 async function parseData() {
   const link = document.querySelector('head > meta[name$=url]').content.replace(/\?.*/g, '').trim();
   const problemId = document.querySelector('div.main > div.lesson-content').getAttribute('data-lesson-id');
@@ -27,6 +29,7 @@ async function parseData() {
   return makeData({ link, problemId, level, title, problem_description, division, language_extension, code, result_message, runtime, memory });
 }
 
+/*서버로 보내는 Data 정제 작업*/ 
 async function makeData(origin) {
   const { link, problem_description, problemId, level, result_message, division, language_extension, title, runtime, memory, code } = origin;
   const levelWithLv = `${level}`.includes('lv') ? level : `lv${level}`.replace('lv', 'level ');

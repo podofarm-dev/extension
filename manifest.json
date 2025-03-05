@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "포도팜(Podofarm)",
-    "description": "프로그래머스에서 푼 문제를 밀도로 자동업로드 해주는 프로그램 ",
-    "version": "1.0.1.2",
+    "name": "Podofarm(포도팜)",
+    "description": "프로그래머스에서 푼 문제를 Podofarm으로 자동 업로드 도와주는 프로그램 ",
+    "version": "1.0.1.3",
     "author": "flaxinger",
     "action": {
       "default_icon": "assets/default.png",
