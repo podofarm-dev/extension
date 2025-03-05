@@ -1,0 +1,67 @@
+{
+    "manifest_version": 3,
+    "name": "포도팜(Podofarm)",
+    "description": "프로그래머스에서 푼 문제를 밀도로 자동업로드 해주는 프로그램 ",
+    "version": "1.0.1.2",
+    "author": "flaxinger",
+    "action": {
+      "default_icon": "assets/default.png",
+      "default_popup": "popup.html"
+    },
+
+    "permissions":[
+      "unlimitedStorage",
+      "storage",
+      "https://www.podofarm.xyz/*",
+      "https://podofarm.xyz/*",
+      "https://api.podofarm.xyz/*",
+      "https://test.podofarm.xyz/*",
+      "http://localhost:8080",
+      "http://loaclhost:5432"
+    ],
+
+    "host_permissions":[
+      "https://school.programmers.co.kr/",
+      "https://www.podofarm.xyz",
+      "https://podofarm.xyz",
+      "http://localhost:8080",
+      "http://localhost:5432"
+    ],
+
+    "web_accessible_resources": [
+      {
+        "matches": [
+          "<all_urls>"
+        ],
+        "resources": [
+          "library/jquery-3.3.1.min.js",
+          "library/semantic.min.js",
+          "popup.html",
+          "popup.js",
+          "welcome.html",
+          "welcome.js"
+        ]
+      }
+    ],
+    "content_scripts": [
+      {
+        "matches": [
+        "https://school.programmers.co.kr/*"
+      ],
+        "css": [
+        ],
+        "js": [
+          "scripts/programmers/variables.js",
+          "scripts/programmers/parsing.js",
+          "scripts/programmers/uploadfunctions.js",
+          "scripts/programmers/programmers.js",
+          "scripts/programmers/util.js",
+          "library/sha1.min.js",
+          "scripts/util.js",
+          "scripts/enable.js",
+          "scripts/storage.js"
+        ],
+        "run_at": "document_idle"
+    }
+  ]
+}
