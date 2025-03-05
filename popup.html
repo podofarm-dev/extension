@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/popup.css" />
+</head>
+
+<body>
+    <div class="extension">
+        <div class="extension-header-area">
+            <div class="extension-header-title">
+                <img src="assets/logo.svg" alt="PodoFarm Logo" class="logo">
+                Podofarm
+            </div>
+            <div class="extension-header-text">
+                Sync Programmers to Podofarm.xyz
+            </div>
+        </div>
+
+        <div class="extension-container-area">
+            <div class="extension-container-area-backgroud">
+                <img src="assets/Group 114.svg" alt="Group">
+            </div>
+            <div class="extension-cotainer-area-ellipse">
+                <img src="assets/Ellipse 110.svg" alt="Ellipse">
+            </div>
+            <div class="extension-container-area-content">
+                <div class="extension-container-input-area">
+                    <div class="extension-container-input-id-area">
+                        <div class="extension-container-area-id-title">아이디</div>
+                        <input type="text" placeholder="아이디를 입력하세요" class="extension-container-area-id-input" id="idInput">
+                    </div>
+                    <div class="extension-container-input-study-area">
+                        <div class="extension-container-area-study-title">스터디 코드</div>
+                        <input type="text" placeholder="스터디 코드를 입력하세요" class="extension-container-area-study-input" id="studyIdInput">
+                    </div>
+                </div>
+
+                <div class="extension-container-button-area">
+                    <button class="extension-container-button" id="connectButton">연동하기</button>
+
+                    <div class="extension-container-button-sync" id="connectSuccessButton" style="display: none;">
+                        <span>실행하기</span>
+                        <label class="switch">
+                            <input type="checkbox" id="toggleSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="cancel-link" id="cancelLink" style="display: none;">연동 안할래요</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
