@@ -18,8 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("아이디와 스터디 코드를 모두 입력해주세요.");
             return;
         }
-        //후에 api.podofarm.xyz 변경
-        sendDataToServer('http://test.podofarm.xyz/code/receive-sync', id, studyId);
+
+        //sendDataToServer('http://test.podofarm.xyz/code/receive-sync', id, studyId);
+        sendDataToServer('http://localhost:8080/code/receive-sync', id, studyId);
     });
 
     cancelLink.addEventListener("click", function () {
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     studyIdInput.addEventListener("input", function () {
-        if (this.value.length > 6) this.value = this.value.slice(0, 6);
+        if (this.value.length > 5) this.value = this.value.slice(0, 5);
     });
 
     toggleSwitch.addEventListener("change", function () {
@@ -68,28 +69,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function sendDataToServer(url, id, studyId) {
         fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, studyId })
         })
-        .then(response => response.json())  
+        .then(response => response.text())
         .then(data => {
             console.log(`${url} 서버로부터 받은 응답:`, data);
     
-            if (data.status === "success") { 
-                const problemIdList = data.problemIdList || []; 
-                
-                const dataStorage = { id, studyId, problemId: problemIdList, isConnected: true };
-                alert(`스토리지가 연동되었습니다! [${url}] ID: ${id}, StudyID: ${studyId}, problemIdList : [${problemIdList.join(', ')}]`);
-
-                chrome.storage.local.set(dataStorage, function () {
-                    console.log('연동 정보 저장:', dataStorage);
-                });
+            if (data === "success") { 
+                chrome.storage.local.set({ id, studyId, isConnected: true, problemId: [] });
+    
+                fetchDataFromServer("http://localhost:8080/code/fetchDataFromServer", id);
     
                 chrome.storage.local.set({ pfEnable: true }, function () {
                     toggleSwitch.checked = true;
                     syncButton.classList.add("toggled");
-                    console.log('연동 시 토글 상태 ON으로 설정');
+                    console.log("연동 시 토글 상태 ON으로 설정");
                 });
     
                 handleSuccessUI(id, studyId);
@@ -101,6 +97,33 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error(`Error on ${url}:`, error);
             alert(`[${url}] 연동 중 오류가 발생했습니다.`);
         });
+    }
+    
+    async function fetchDataFromServer(url, id) {
+        try {
+            const requestUrl = `${url}?id=${id}`;
+    
+            const response = await fetch(requestUrl);
+    
+            if (!response.ok) {
+                alert("오류가 발생했습니다.");
+                resetUI();
+                throw new Error(`서버 응답 실패: ${response.status}`);
+            }
+    
+            const data = await response.json();
+    
+            const problemIdList = Array.isArray(data.problemIdList) ? data.problemIdList : [];
+    
+            chrome.storage.local.set({ problemId: problemIdList }, function () {
+                console.log("저장된 problemIdList:", problemIdList);
+            });
+    
+        } catch (error) {
+            console.error("Id list error:", error);
+            alert("서버에서 문제 ID 리스트를 받아오는 중 오류가 발생했습니다.");
+            resetUI();
+        }
     }
     
 

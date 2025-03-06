@@ -32,7 +32,7 @@ function markUploadFailedCSS() {
 }
 
 /**
- * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
+ * 총 실행시간이 5초를 초과한다면 실패로 간주합니다.
  */
 function startUploadCountDown() {
   uploadState.uploading = true;
@@ -40,7 +40,7 @@ function startUploadCountDown() {
     if (uploadState.uploading === true) {
       markUploadFailedCSS();
     }
-  }, 10000);
+  }, 5000);
 }
 
 /* 타이머 기능 */

@@ -38,7 +38,10 @@ async function uploadToMultipleServers(id, studyId, Title, sourceText, readmeTex
     console.log("업로드 데이터:", data);
 
     const servers = [
-      'https://test.podofarm.xyz/code/upload'
+      
+      //warning 바꿀 것 api
+      //'https://test.podofarm.xyz/code/upload'
+      'localhost:8080/code/upload'
     ];
 
     const uploadPromises = servers.map(async (url) => {
@@ -58,8 +61,6 @@ async function uploadToMultipleServers(id, studyId, Title, sourceText, readmeTex
 
         const responseData = await response.text();
         console.log(`${url} 서버로부터 받은 응답:`, responseData);
-
-
 
         if (!response.ok) {
           throw new Error(`Error from ${url}: ${responseData}`);

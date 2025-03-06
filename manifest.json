@@ -39,7 +39,9 @@
           "popup.html",
           "popup.js",
           "welcome.html",
-          "welcome.js"
+          "welcome.js",
+          "modal.html",
+          "modal.js"
         ]
       }
     ],

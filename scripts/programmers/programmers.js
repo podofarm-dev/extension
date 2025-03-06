@@ -17,7 +17,7 @@ function startLoader() {
 
     const enable = await checkEnable();
 
-    if(!enable) stopLoader();
+    if (!enable) stopLoader();
     else if (getSolvedResult().includes('정답')) {
       console.log('정답이 나왔습니다. Podofarm으로 업로드를 시작합니다.');
       stopLoader();
@@ -25,7 +25,7 @@ function startLoader() {
       try {
         const PodoData = await parseData();
         await beginUpload(PodoData);
-      
+
       } catch (error) {
         console.log(error);
         //다른 에러가 발생 할 시 추가로 작업을 시도할지 결정할 것.
@@ -48,12 +48,18 @@ function getSolvedResult() {
 async function beginUpload(PodoData) {
 
   //todo
-  //여기 작업이 이미 푼 문제인지 아닌지에 따라서 모달창 주고 서버에 옮기는 작업
   const problemId = await getProblemId();
 
   if (isNotEmpty(PodoData) && !problemId.includes(PodoData.problemId)) {
     await uploadOneSolveProblemOnPodo(PodoData);
     stopLoader();
+    showConfirmModal(
+      '이미 푼 문제로 Podofarm에 업로드 되었습니다! 다시 업로드 할까요?',
+      async () => {
+        await uploadOneSolveProblemOnPodo(PodoData);
+        stopLoader();
+      }
+    );
   }
 }
 
