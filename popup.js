@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        //sendDataToServer('http://test.podofarm.xyz/code/receive-sync', id, studyId);
-        sendDataToServer('http://localhost:8080/code/receive-sync', id, studyId);
+        sendDataToServer('http://test.podofarm.xyz/code/receive-sync', id, studyId);
+        //sendDataToServer('http://localhost:8080/code/receive-sync', id, studyId);
     });
 
     cancelLink.addEventListener("click", function () {
@@ -80,7 +80,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data === "success") { 
                 chrome.storage.local.set({ id, studyId, isConnected: true, problemId: [] });
     
-                fetchDataFromServer("http://localhost:8080/code/fetchDataFromServer", id);
+                //fetchDataFromServer("http://localhost:8080/code/fetchDataFromServer", id);
+                fetchDataFromServer("https://test.podofarm.xyz/code/fetchDataFromServer", id);
     
                 chrome.storage.local.set({ pfEnable: true }, function () {
                     toggleSwitch.checked = true;
@@ -102,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchDataFromServer(url, id) {
         try {
             const requestUrl = `${url}?id=${id}`;
-    
             const response = await fetch(requestUrl);
     
             if (!response.ok) {

@@ -40,8 +40,8 @@ async function uploadToMultipleServers(id, studyId, Title, sourceText, readmeTex
     const servers = [
       
       //warning 바꿀 것 api
-      //'https://test.podofarm.xyz/code/upload'
-      'localhost:8080/code/upload'
+      'https://test.podofarm.xyz/code/upload'
+      //'http://localhost:8080/code/upload'
     ];
 
     const uploadPromises = servers.map(async (url) => {
