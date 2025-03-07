@@ -6,6 +6,9 @@ async function uploadOneSolveProblemOnPodo(PodoData) {
   
   if (isNull(id) || isNull(studyId)) {
     console.error('id, studyId Null', id, studyId);
+
+    //todo 
+    //모달창 생성 아이디와 비밀번호가 연동되지 않았다.
     return;
   }
 
@@ -35,7 +38,10 @@ async function uploadToMultipleServers(id, studyId, Title, sourceText, readmeTex
     console.log("업로드 데이터:", data);
 
     const servers = [
-      'https://test.podofarm.xyz/code/upload'
+      
+      //warning 바꿀 것 api
+      //'https://test.podofarm.xyz/code/upload'
+      'localhost:8080/code/upload'
     ];
 
     const uploadPromises = servers.map(async (url) => {
@@ -47,6 +53,11 @@ async function uploadToMultipleServers(id, studyId, Title, sourceText, readmeTex
           },
           body: JSON.stringify(data)
         });
+        
+
+        //1. Local Storage에서 ProblemId 확인 만약 푼 문제라면, 이미 푼 문제입니다. 내용을 업데이트할까요 묻기
+        //2. 푼 문제가 아니라면 
+
 
         const responseData = await response.text();
         console.log(`${url} 서버로부터 받은 응답:`, responseData);
