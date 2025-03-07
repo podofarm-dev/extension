@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
                 handleSuccessUI(id, studyId);
             } else {
-                alert(`[${url}] 연동에 실패하였습니다. ID와 스터디 아이디를 확인해주세요.`);
+                alert(`ID와 스터디 아이디를 확인해주세요.`);
             }
         })
         .catch(error => {
