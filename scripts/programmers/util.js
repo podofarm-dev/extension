@@ -159,8 +159,6 @@ function observeCorrectAnswer() {
           if (node.nodeType === 1 && node.textContent.includes('정답입니다')) {
             stopTimer();
 
-            console.log("정답 감지됨, 문제 업로드를 시작합니다.");
-
             // elapsedTime이 NaN이면 00:00:00으로 기본값 설정
             const safeTimeSpent = formatTime(elapsedTime);
             sendTimerData(safeTimeSpent);

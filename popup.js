@@ -39,7 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     toggleSwitch.addEventListener("change", function () {
-        chrome.storage.local.set({ 'pfEnable': this.checked }, function () {
+        chrome.storage.local.set({
+            'pfEnable': this.checked
+        }, function () {
             console.log(`토글 상태 저장됨: ${toggleSwitch.checked ? "ON" : "OFF"}`);
         });
 
@@ -69,63 +71,97 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function sendDataToServer(url, id, studyId) {
         fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id, studyId })
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log(`${url} 서버로부터 받은 응답:`, data);
-    
-            if (data === "success") { 
-                chrome.storage.local.set({ id, studyId, isConnected: true, problemId: [] });
-    
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id,
+                    studyId
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(`${url} 서버로부터 받은 응답:`, data);
+
+                if (data === "success") {
+                    chrome.storage.local.set({
+                        id,
+                        studyId,
+                        isConnected: true,
+                        problemId: []
+                    });
+                } else {
+                    alert(`ID와 스터디 아이디를 확인해주세요.`);
+                }
+
+                setTimeout(() => {
+                    fetchDataFromServer("https://test.podofarm.xyz/code/fetchDataFromServer", id);
+                }, 2000);
                 //fetchDataFromServer("http://localhost:8080/code/fetchDataFromServer", id);
-                fetchDataFromServer("https://test.podofarm.xyz/code/fetchDataFromServer", id);
-    
-                chrome.storage.local.set({ pfEnable: true }, function () {
+
+                chrome.storage.local.set({
+                    pfEnable: true
+                }, function () {
                     toggleSwitch.checked = true;
                     syncButton.classList.add("toggled");
                     console.log("연동 시 토글 상태 ON으로 설정");
                 });
-    
+
                 handleSuccessUI(id, studyId);
-            } else {
-                alert(`ID와 스터디 아이디를 확인해주세요.`);
-            }
-        })
-        .catch(error => {
-            console.error(`Error on ${url}:`, error);
-            alert(`[${url}] 연동 중 오류가 발생했습니다.`);
-        });
+            })
+            .catch(error => {
+                console.error(`Error on ${url}:`, error);
+                alert(`[${url}] 연동 중 오류가 발생했습니다.`);
+            });
     }
-    
-    async function fetchDataFromServer(url, id) {
+
+    async function fetchDataFromServer(url, id, retryCount = 3) {
         try {
-            const requestUrl = `${url}?id=${id}`;
-            const response = await fetch(requestUrl);
-    
+            const response = await fetch(`${url}?id=${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
             if (!response.ok) {
-                alert("오류가 발생했습니다.");
-                resetUI();
                 throw new Error(`서버 응답 실패: ${response.status}`);
             }
-    
+
             const data = await response.json();
-    
-            const problemIdList = Array.isArray(data.problemIdList) ? data.problemIdList : [];
-    
-            chrome.storage.local.set({ problemId: problemIdList }, function () {
-                console.log("저장된 problemIdList:", problemIdList);
+            console.log("서버에서 받은 데이터:", JSON.stringify(data, null, 2));
+
+            if (data.error === "아직 데이터가 준비되지 않았습니다.") {
+                if (retryCount > 0) {
+                    console.log(`데이터가 아직 없음. 1초 후 다시 시도 (${retryCount}회 남음)`);
+                    setTimeout(() => {
+                        fetchDataFromServer(url, id, retryCount - 1);
+                    }, 1000);
+                } else {
+                    alert("서버에서 문제 리스트를 가져오는 데 실패했습니다.");
+                }
+                return;
+            }
+
+            await new Promise((resolve) => {
+                chrome.storage.local.set({
+                    problemId: data.problemIdList
+                }, function () {
+                    console.log("저장된 problemIdList:", data.problemIdList);
+                    resolve();
+                });
             });
-    
+
         } catch (error) {
             console.error("Id list error:", error);
-            alert("서버에서 문제 ID 리스트를 받아오는 중 오류가 발생했습니다.");
-            resetUI();
+            alert("서버에서 문제 리스트를 가져오는 중 오류 발생!");
         }
     }
-    
+
+
+
+
 
     function handleSuccessUI(id, studyId) {
         connectButton.style.display = "none";
@@ -153,6 +189,8 @@ document.addEventListener("DOMContentLoaded", function () {
         extensionContent.classList.remove("connected");
         toggleSwitch.checked = false;
         syncButton.classList.remove("toggled");
-        chrome.storage.local.set({ pfEnable: false });
+        chrome.storage.local.set({
+            pfEnable: false
+        });
     }
 });
